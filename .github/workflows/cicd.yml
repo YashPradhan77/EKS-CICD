@@ -38,7 +38,7 @@ jobs:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v5
         with:
-          role-to-assume: arn:aws:iam::898896902478:role/github_OIDC_role
+          role-to-assume: arn:aws:iam::898896902478:role/GithubActionsRole
           aws-region: us-west-1
 
       - name: Login to ECR
@@ -87,7 +87,7 @@ jobs:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v5
         with:
-          role-to-assume: arn:aws:iam::898896902478:role/github_OIDC_role
+          role-to-assume: arn:aws:iam::898896902478:role/GithubActionsRole
           aws-region: us-west-1
 
       - name: Update kubeconfig (staging)
