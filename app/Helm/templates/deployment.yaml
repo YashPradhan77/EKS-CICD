@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.votingapp.deployName }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    name: {{ .Values.votingapp.deployName }}
+    app: {{ .Values.appName }}
+spec:
+  replicas: {{ .Values.votingapp.replicaCount }}
+  selector:
+    matchLabels:
+      name: {{ .Values.votingapp.podName }}
+      app: {{ .Values.appName }}
+  template:
+    metadata:
+      name: {{ .Values.votingapp.podName }}    
+      labels:
+        name: {{ .Values.votingapp.podName }}
+        app: {{ .Values.appName }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }} 
+        image: {{ .Values.votingapp.containerImage }}
+        resources:
+          limits:
+            memory: {{ .Values.votingapp.containerMemory }}
+            cpu: {{ .Values.votingapp.containerCPU }}
+          requests:
+            memory: {{ .Values.votingapp.containerMemory }}
+            cpu: {{ .Values.votingapp.containerCPU }}
+        ports:
+          - containerPort: {{ .Values.votingapp.containerPort }}

@@ -1,0 +1,15 @@
+appName: voting-app
+
+votingapp:
+    deployName: voting-app-deploy
+    serviceName: voting-service
+    podName: voting-app-pod  
+    repicaCount: 1 
+    containerImage: public.ecr.aws/w8a6s2p8/app:v1
+    containerPort: 80
+    containerMemory: "128Mi"
+    containerCPU: "500m"
+    type: NodePort
+    NodePort: 30080
+    ingressName: voting-app-alb-ingress
+    targetType: instance

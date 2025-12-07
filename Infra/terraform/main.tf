@@ -1,0 +1,81 @@
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "5.1.0"
+
+  name = "${var.cluster_name}-vpc"
+  cidr = var.vpc_cidr
+
+  azs             = ["${var.aws_region}a", "${var.aws_region}c"]
+  private_subnets = ["10.0.1.0/24", "10.0.2.0/24"]
+  public_subnets  = ["10.0.101.0/24", "10.0.102.0/24"]
+
+  enable_dns_hostnames = true
+  enable_nat_gateway   = true
+
+  tags = {
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
+  }
+}
+
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "20.8.4"
+
+  cluster_name    = var.cluster_name
+  cluster_version = "1.34"
+  subnet_ids      = module.vpc.private_subnets
+  vpc_id          = module.vpc.vpc_id
+
+  enable_irsa = true
+
+  cluster_endpoint_public_access  = true
+  cluster_endpoint_private_access = true
+  eks_managed_node_groups = {
+    default = {
+      instance_types = [var.instance_type]
+      desired_size   = var.desired_capacity
+      max_size       = 3
+      min_size       = 1
+    }
+  }
+  # cluster_encryption_config = [{
+  #   resources        = ["secrets"]
+  #   provider_key_arn = aws_kms_key.eks.arn
+  # }]
+# access_entries      = local.eks_access_entries
+
+# # explicitly set authentication mode (recommended)
+# authentication_mode = "API_AND_CONFIG_MAP"
+
+
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
+  }
+}
+
+# locals {
+#   eks_access_entries_list = [
+#     {
+#       name         = "sso-admin"    # short id used as map key
+#       principal_arn = "arn:aws:iam::898896902478:role/aws-reserved/sso.amazonaws.com/AWSReservedSSO_AWSAdministratorAccess_264f983f36a25f33"
+#       access_policy = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy"
+#     }
+#   ]
+# }
+
+# locals {
+#   eks_access_entries = {
+#     for entry in local.eks_access_entries_list :
+#     entry.name => {
+#       principal_arn     = entry.principal_arn
+#       kubernetes_groups = ["system:masters"]   # adjust per-entry if needed
+#       policy_associations = {
+#         assoc = {
+#           policy_arn   = entry.access_policy
+#           access_scope = { type = "cluster" }
+#         }
+#       }
+#     }
+#   }
+# }
