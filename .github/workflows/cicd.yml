@@ -98,11 +98,11 @@ jobs:
       - name: Verify kubectl
         run: kubectl get nodes
 
-      - name: Helm deploy to staging
+      - name: Chart deploy to staging
         env:
           IMAGE_TAG: ${{ needs.build-and-push.outputs.image-tag }}
         run: |
-          Helm upgrade --install app ./Helm \
+          Chart upgrade --install app ./Chart \
             --namespace voting-app --create-namespace \
             --set image.repository=public.ecr.aws/w8a6s2p8/app \
             --set image.tag=${IMAGE_TAG} \
