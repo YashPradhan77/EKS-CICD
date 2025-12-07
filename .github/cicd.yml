@@ -38,7 +38,7 @@ jobs:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v5
         with:
-          role-to-assume: arn:aws:iam::898896902478:oidc-provider/token.actions.githubusercontent.com
+          role-to-assume: arn:aws:iam::898896902478:role/GitHubOIDCRole
           aws-region: us-west-1
 
       - name: Login to ECR
@@ -88,7 +88,7 @@ jobs:
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v5
         with:
-          role-to-assume: arn:aws:iam::898896902478:oidc-provider/token.actions.githubusercontent.com
+          role-to-assume: arn:aws:iam::898896902478:role/GitHubOIDCRole
           aws-region: us-west-1
 
       - name: Update kubeconfig (staging)
@@ -102,7 +102,7 @@ jobs:
         env:
           IMAGE_TAG: ${{ needs.build-and-push.outputs.image-tag }}
         run: |
-          helm upgrade --install app ./helm \
+          Helm upgrade --install app ./Helm \
             --namespace voting-app --create-namespace \
             --set image.repository=public.ecr.aws/w8a6s2p8/app \
             --set image.tag=${IMAGE_TAG} \
